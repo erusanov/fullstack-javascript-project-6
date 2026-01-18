@@ -1,0 +1,44 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM", crossorigin="anonymous")
+    title= t('app.title')
+  body
+    .d-flex.flex-column.min-vh-100.bg-light
+      nav.navbar.navbar-expand-lg.navbar-light.bg-light
+        .container
+          a.navbar-brand(href=app.reverse('root'))= t('app.name')
+          button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#navbarTogglerDemo01", aria-controls="navbarTogglerDemo01", aria-expanded="false", aria-label="Toggle navigation")
+            span.navbar-toggler-icon
+          #navbarTogglerDemo01.collapse.navbar-collapse
+            ul.navbar-nav.justify-content-end.w-100
+              li.nav-item.me-auto
+                a.nav-link(href='/users')= t('app.users')
+              if isAuthenticated
+                li.nav-item
+                  a.nav-link(href='/statuses')= t('app.taskStatuses')
+                li.nav-item
+                  a.nav-link(href='/labels')= t('app.labels')
+                li.nav-item
+                  a.nav-link(href='/tasks')= t('app.tasks')
+                form(action=app.reverse('sessionDelete') method='post')
+                  input(type="hidden" name="_method" value="delete")
+                  button.btn.nav-link(type="submit")= t('app.signOut')
+              else
+                li.nav-item
+                  a.nav-link(href=app.reverse('sessionNew'))= t('app.signIn')
+                li.nav-item
+                  a.nav-link(href=app.reverse('usersNew'))= t('app.signUp')
+
+      .container.wrapper.flex-grow-1
+        each messages, type in flash
+          each msg in messages
+            div(class=`alert alert-${type === 'error' ? 'danger' : type === 'info' ? 'info' : 'success'}` role="alert")= msg
+        block content
+
+      footer.bg-dark.text-light
+        .container.py-3
+          p.lead.mb-0
+           | &copy; Hexlet Ltd, 2025
