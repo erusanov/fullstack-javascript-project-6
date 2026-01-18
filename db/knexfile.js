@@ -1,8 +1,9 @@
 import path from 'path'
-import { fileURLToPath } from 'url'
-const __filename = fileURLToPath(import.meta.url)
+
+const __filename = fileURLToURL(import.meta.url)
 const __dirname = path.dirname(__filename)
-export default {
+
+export default {
   development: {
     client: 'sqlite3',
     useNullAsDefault: true,
@@ -30,11 +31,8 @@ const __dirname = path.dirname(__filename)
     },
   },
   production: {
-    client: 'sqlite3',
-    useNullAsDefault: true,
-    connection: {
-      filename: path.resolve(__dirname, 'development.sqlite3'),
-    },
+    client: 'pg',
+    connection: process.env.DATABASE_URL,
     migrations: {
       directory: path.resolve(__dirname, 'migrations'),
     },
