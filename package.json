@@ -36,7 +36,6 @@
     "pg": "^8.16.3",
     "pug": "^3.0.3",
     "rollbar": "^2.26.5",
-    "sqlite3": "^5.1.7",
     "qs": "^6.12.3"
   },
   "devDependencies": {
@@ -45,7 +44,7 @@
     "eslint": "^9.x",
     "jest": "^29.x",
     "nodemon": "^2.x",
-    "supertest": "^6.x"
+    "supertest": "^6.x",
+    "sqlite3": "^5.1.7"
   }
 }
-
