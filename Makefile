@@ -10,6 +10,9 @@ lint:
 start:
 	npm run start
 
+dev:
+	npm run dev
+
 lintfix:
 	npx eslint --fix .
 
