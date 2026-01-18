@@ -1,0 +1,169 @@
+{
+  "translation": {
+    "app": {
+      "title": "Hexlet Fastify App",
+      "name": "Hexlet App",
+      "welcome": "Welcome to Hexlet Fastify App!",
+      "description": "This is a boilerplate for a Fastify Node.js application.",
+      "users": "Users",
+      "signIn": "Sign In",
+      "signUp": "Sign Up",
+      "signOut": "Sign Out",
+      "taskStatuses": "Task Statuses",
+      "tasks": "Tasks",
+      "labels": "Labels"
+    },
+    "layouts": {
+      "application": {
+        "login": "Login",
+        "signup": "Sign Up",
+        "users": "Users"
+      }
+    },
+    "flash": {
+      "users": {
+        "create": {
+          "success": "User has been registered successfully!",
+          "error": "Failed to register user."
+        },
+        "edit": {
+          "success": "User has been updated successfully!",
+          "error": "Failed to update user.",
+          "accessDenied": "You cannot edit or delete another user."
+        },
+        "delete": {
+          "success": "User has been deleted successfully!",
+          "error": "Failed to delete user.",
+          "hasTasks": "Cannot delete user with linked tasks"
+        }
+      },
+      "session": {
+        "create": {
+          "success": "You are logged in!",
+          "error": "Invalid email or password."
+        },
+        "delete": {
+          "success": "You are logged out!"
+        }
+      },
+      "taskStatus": {
+        "create": {
+          "success": "Task status has been created successfully!",
+          "error": "Failed to create task status."
+        },
+        "edit": {
+          "success": "Task status has been updated successfully!",
+          "error": "Failed to update task status."
+        },
+        "delete": {
+          "success": "Task status has been deleted successfully!",
+          "error": "Failed to delete task status."
+        }
+      },
+      "task": {
+        "create": {
+          "success": "Task has been created successfully!",
+          "error": "Failed to create task."
+        },
+        "edit": {
+          "success": "Task has been updated successfully!",
+          "error": "Failed to update task."
+        },
+        "delete": {
+          "success": "Task has been deleted successfully!",
+          "error": "Failed to delete task."
+        },
+        "accessDenied": "Access denied! You can only delete your own tasks."
+      },
+      "label": {
+        "create": {
+          "success": "Label has been created successfully!",
+          "error": "Failed to create label."
+        },
+        "edit": {
+          "success": "Label has been updated successfully!",
+          "error": "Failed to update label."
+        },
+        "delete": {
+          "success": "Label has been deleted successfully!",
+          "error": "Failed to delete label."
+        }
+      },
+      "authError": "Access denied! Please log in.",
+      "accessDenied": "Access denied! You can only modify your own data."
+    },
+    "views": {
+      "users": {
+        "title": "Users",
+        "id": "ID",
+        "fullName": "Full Name",
+        "email": "Email",
+        "createdAt": "Created At",
+        "actions": "Actions",
+        "edit": "Edit",
+        "delete": "Delete",
+        "new": "New User",
+        "firstName": "First Name",
+        "lastName": "LastName",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "register": "Register",
+        "editUser": "Edit User"
+      },
+      "session": {
+        "signIn": "Sign In",
+        "email": "Email",
+        "password": "Password"
+      },
+      "taskStatus": {
+        "id": "ID",
+        "name": "Name",
+        "createdAt": "Created At",
+        "actions": "Actions",
+        "edit": "Edit",
+        "delete": "Delete",
+        "new": "New Status",
+        "statuses": "Task Statuses",
+        "create": "Create",
+        "editStatus": "Edit Task Status"
+      },
+      "task": {
+        "id": "ID",
+        "name": "Name",
+        "description": "Description",
+        "status": "Status",
+        "creator": "Creator",
+        "executor": "Executor",
+        "createdAt": "Created At",
+        "actions": "Actions",
+        "edit": "Edit",
+        "delete": "Delete",
+        "new": "New Task",
+        "tasks": "Tasks",
+        "create": "Create",
+        "editTask": "Edit Task",
+        "viewTask": "View Task",
+        "labels": "Labels",
+        "filter": {
+          "status": "Status",
+          "executor": "Executor",
+          "label": "Label",
+          "showMyTasks": "Show my tasks",
+          "apply": "Apply"
+        }
+      },
+      "label": {
+        "id": "ID",
+        "name": "Name",
+        "createdAt": "Created At",
+        "actions": "Actions",
+        "edit": "Edit",
+        "delete": "Delete",
+        "new": "New Label",
+        "labels": "Labels",
+        "create": "Create",
+        "editLabel": "Edit Label"
+      }
+    }
+  }
+}
