@@ -1,0 +1,27 @@
+extends ../layouts/application.pug
+
+block content
+   h1.display-4.fw-bold.mt-4= t('views.users.title')
+
+   .table-responsive
+     table.table.table-borderless.table-striped.mt-5.bg-white
+       thead
+         tr
+           th= t('views.users.id')
+           th= t('views.users.fullName')
+           th= t('views.users.email')
+           th= t('views.users.createdAt')
+           th= t('views.users.actions')
+       tbody
+         each user in users
+           tr
+             td= user.id
+             td= `${user.firstName} ${user.lastName}`
+             td= user.email
+             td= user.createdAt
+             td
+               .d-flex.flex-wrap
+                 a.btn.btn-primary.me-1(href=app.reverse('usersEdit', { id: user.id }))= t('views.users.edit')
+                 form(action=app.reverse('usersDelete', { id: user.id }) method='post')
+                   input(type="hidden" name="_method" value="delete")
+                   button.btn.btn-danger(type="submit")= t('views.users.delete')

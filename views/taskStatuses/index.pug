@@ -1,0 +1,26 @@
+extends ../layouts/application.pug
+
+block content
+  h1.display-4.fw-bold.mt-4= t('views.taskStatus.statuses')
+  a.btn.btn-primary(href=app.reverse('taskStatusesNew'))= t('views.taskStatus.new')
+
+  .table-responsive
+    table.table.table-borderless.table-striped.mt-5.bg-white
+      thead
+        tr
+          th= t('views.taskStatus.id')
+          th= t('views.taskStatus.name')
+          th= t('views.taskStatus.createdAt')
+          th= t('views.taskStatus.actions')
+      tbody
+        each taskStatus in taskStatuses
+          tr
+            td= taskStatus.id
+            td= taskStatus.name
+            td= taskStatus.createdAt
+            td
+              .d-flex.flex-wrap
+                a.btn.btn-primary.me-1(href=app.reverse('taskStatusesEdit', { id: taskStatus.id }))= t('views.taskStatus.edit')
+                form(action=app.reverse('taskStatusesDelete', { id: taskStatus.id }) method='post')
+                  input(type="hidden" name="_method" value="delete")
+                  button.btn.btn-danger(type="submit")= t('views.taskStatus.delete')

@@ -1,0 +1,34 @@
+extends ../layouts/application.pug
+
+block content
+  h1.display-4.fw-bold.mt-4= t('views.users.new')
+
+  .row.justify-content-center
+    .col-12.col-md-8
+      .card.shadow-sm
+        .card-body.row.p-5
+          .col-12.col-md-6.d-flex.align-items-center.justify-content-center
+            img.rounded-circle(src='/assets/avatar_1-D7Cot-zE.jpg' alt='avatar')
+          .col-12.col-md-6.mt-3.mt-mb-0
+            form(action=app.reverse('users') method='post')
+              .mb-3.form-floating
+                input.form-control(type='text' id='data_firstName' name='data[firstName]' value=user.firstName)
+                label.form-label(for='data_firstName')= t('views.users.firstName')
+                if errors && errors.firstName
+                  .text-danger= errors.firstName.message
+              .mb-3.form-floating
+                input.form-control(type='text' id='data_lastName' name='data[lastName]' value=user.lastName)
+                label.form-label(for='data_lastName')= t('views.users.lastName')
+                if errors && errors.lastName
+                  .text-danger= errors.lastName.message
+              .mb-3.form-floating
+                input.form-control(type='email' id='data_email' name='data[email]' value=user.email)
+                label.form-label(for='data_email')= t('views.users.email')
+                if errors && errors.email
+                  .text-danger= errors.email.message
+              .mb-3.form-floating
+                input.form-control(type='password' id='data_password' name='data[password]')
+                label.form-label(for='data_password')= t('views.users.password')
+                if errors && errors.password
+                  .text-danger= errors.password.message
+              button.btn.btn-primary(type='submit')= t('views.users.register')

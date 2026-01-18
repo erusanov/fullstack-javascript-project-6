@@ -1,0 +1,12 @@
+.idea
+.env.*
+
+*/*.sqlite3
+*/*.sqlite
+*.sqlite3
+*.sqlite
+
+node_modules/
+
+.idea/
+

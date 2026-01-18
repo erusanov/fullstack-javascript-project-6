@@ -1,0 +1,22 @@
+extends ../layouts/application.pug
+
+block content
+  h1.display-4.fw-bold.mt-4= t('views.session.signIn')
+
+  .row.justify-content-center
+    .col-12.col-md-8
+      .card.shadow-sm
+        .card-body.row.p-5
+          .col-12.col-md-6.d-flex.align-items-center.justify-content-center
+            img.rounded-circle(src='/assets/avatar-DIE1AEpS.jpg' alt='avatar')
+          .col-12.col-md-6.mt-3.mt-mb-0
+            form(action=app.reverse('session') method='post')
+              .mb-3.form-floating
+                input.form-control(type='email' id='data_email' name='data[email]' value=signInForm.email class=(errors && errors.email ? 'is-invalid' : ''))
+                label.form-label(for='data_email')= t('views.session.email')
+                if errors && errors.email
+                  div.invalid-feedback= errors.email
+              .mb-3.form-floating
+                input.form-control(type='password' id='data_password' name='data[password]')
+                label.form-label(for='data_password')= t('views.session.password')
+              button.btn.btn-primary(type='submit')= t('views.session.signIn')

@@ -1,0 +1,14 @@
+extends ../layouts/application.pug
+
+block content
+  .container.mt-3
+    h1= t('views.label.editLabel')
+
+    form(action=app.reverse('labelsUpdate', { id: label.id }) method='post')
+      input(type="hidden" name="_method" value="patch")
+      .mb-3
+        label.form-label(for='data_name')= t('views.label.name')
+        input.form-control(type='text' id='data_name' name='data[name]' value=label.name)
+        if errors && errors.name
+          .text-danger= errors.name.message
+      button.btn.btn-primary(type='submit')= t('views.label.edit')
