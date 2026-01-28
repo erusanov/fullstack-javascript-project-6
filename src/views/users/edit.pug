@@ -1,0 +1,29 @@
+extends ../layouts/application
+
+block content
+  .container.mt-3
+    h1= t('views.users.editUser')
+
+    form(action=app.reverse(ROUTES.USERS_UPDATE.NAME, { id: user.id }) method='post')
+      input(type="hidden" name="_method" value="patch")
+      .mb-3
+        label.form-label(for='data_firstName')= t('views.users.firstName')
+        input.form-control(type='text' id='data_firstName' name='data[firstName]' value=user.firstName)
+        if errors && errors.firstName
+          .text-danger= errors.firstName.message
+      .mb-3
+        label.form-label(for='data_lastName')= t('views.users.lastName')
+        input.form-control(type='text' id='data_lastName' name='data[lastName]' value=user.lastName)
+        if errors && errors.lastName
+          .text-danger= errors.lastName.message
+      .mb-3
+        label.form-label(for='data_email')= t('views.users.email')
+        input.form-control(type='email' id='data_email' name='data[email]' value=user.email)
+        if errors && errors.email
+          .text-danger= errors.email.message
+      .mb-3
+        label.form-label(for='data_password')= t('views.users.password')
+        input.form-control(type='password' id='data_password' name='data[password]')
+        if errors && errors.password
+          .text-danger= errors.password.message
+      button.btn.btn-primary(type='submit')= t('views.users.edit')
