@@ -4,11 +4,13 @@ import {
 import request from 'supertest'
 import { faker } from '@faker-js/faker'
 import { buildApp } from '../index.js'
-import knexConfig from '../db/knexfile.js'
-import User from '../models/User.js'
-import TaskStatus from '../models/TaskStatus.js'
+import knexConfig from '../src/db/knexfile.js'
+import User from '../src/models/User.js'
+import TaskStatus from '../src/models/TaskStatus.js'
+import { Routes as ROUTES } from '../src/const/routes.js'
 
-let applet knex
+let app
+let knex
 
 beforeAll(async () => {
   app = await buildApp({ knexConfig: knexConfig.test, logger: false })
@@ -32,23 +34,28 @@ beforeEach(async () => {
 })
 
 const createAuthenticatedAgent = async () => {
-  const rawPassword = faker.internet.password()  const userData = {
+  const rawPassword = faker.internet.password()
+  const userData = {
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
     password: rawPassword,
-  }  const user = await User.query().insert(userData)  const agent = request.agent(app.server)
+  }
+  const user = await User.query().insert(userData)
+  const agent = request.agent(app.server)
 
   await agent
-    .post(app.reverse('session'))
+    .post(app.reverse(ROUTES.SESSIONS_CREATE.NAME))
     .type('form')
     .send({ data: { email: user.email, password: rawPassword } })
 
   return { agent, user }
-}const createTaskStatus = async () => {
+}
+const createTaskStatus = async () => {
   const statusData = {
     name: faker.word.noun(),
-  }  const taskStatus = await TaskStatus.query().insert(statusData)
+  }
+  const taskStatus = await TaskStatus.query().insert(statusData)
 
   return taskStatus
 }

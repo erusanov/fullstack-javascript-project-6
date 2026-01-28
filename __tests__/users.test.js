@@ -1,17 +1,20 @@
 import { test, expect } from '@jest/globals'
-import Task from '../models/Task.js'
+import Task from '../src/models/Task.js'
 import {
   app, request, faker, createAuthenticatedAgent, createTaskStatus,
 } from './setup.js'
+import { Routes as ROUTES } from '../src/const/routes.js'
 
 test('GET /users', async () => {
-  const res = await request(app.server).get(app.reverse('users'))
+  const res = await request(app.server)
+    .get(app.reverse(ROUTES.USERS.NAME))
 
   expect(res.statusCode).toEqual(200)
 })
 
 test('GET /users/new', async () => {
-  const res = await request(app.server).get(app.reverse('usersNew'))
+  const res = await request(app.server)
+    .get(app.reverse(ROUTES.USERS_NEW.NAME))
 
   expect(res.statusCode).toEqual(200)
 })
@@ -25,11 +28,13 @@ test('POST /users', async () => {
   }
 
   await request(app.server)
-    .post(app.reverse('usersCreate'))
+    .post(app.reverse(ROUTES.USERS_CREATE.NAME))
     .type('form')
     .send({ data: userData })
 
-  const user = await app.objection.models.user.query().findOne({ email: userData.email })
+  const user = await app.objection.models.user
+    .query()
+    .findOne({ email: userData.email })
 
   expect(user).toBeDefined()
   expect(user.firstName).toEqual(userData.firstName)
@@ -37,7 +42,13 @@ test('POST /users', async () => {
 
 test('User can edit their own profile', async () => {
   const { agent, user } = await createAuthenticatedAgent()
-  const resEditPage = await agent.get(app.reverse('usersEdit', { id: user.id }))
+  const resEditPage = await agent
+    .get(
+      app.reverse(
+        ROUTES.USERS_EDIT.NAME,
+        { id: user.id },
+      ),
+    )
 
   expect(resEditPage.statusCode).toEqual(200)
 
@@ -48,11 +59,13 @@ test('User can edit their own profile', async () => {
   }
 
   await agent
-    .patch(app.reverse('usersUpdate', { id: user.id }))
+    .patch(app.reverse(ROUTES.USERS_UPDATE.NAME, { id: user.id }))
     .type('form')
     .send({ data: updatedData })
 
-  const updatedUser = await app.objection.models.user.query().findById(user.id)
+  const updatedUser = await app.objection.models.user
+    .query()
+    .findById(user.id)
 
   expect(updatedUser.firstName).toEqual(updatedData.firstName)
 })
@@ -60,9 +73,17 @@ test('User can edit their own profile', async () => {
 test('User can delete their own profile', async () => {
   const { agent, user } = await createAuthenticatedAgent()
 
-  await agent.delete(app.reverse('usersDelete', { id: user.id }))
+  await agent
+    .delete(
+      app.reverse(
+        ROUTES.USERS_DELETE.NAME,
+        { id: user.id },
+      ),
+    )
 
-  const deletedUser = await app.objection.models.user.query().findById(user.id)
+  const deletedUser = await app.objection.models.user
+    .query()
+    .findById(user.id)
 
   expect(deletedUser).toBeUndefined()
 })
@@ -70,15 +91,29 @@ test('User can delete their own profile', async () => {
 test('User cannot edit or delete other users', async () => {
   const { user: user1 } = await createAuthenticatedAgent()
   const { agent: agent2 } = await createAuthenticatedAgent()
-  const resEdit = await agent2.get(app.reverse('usersEdit', { id: user1.id }))
+
+  const resEdit = await agent2.get(
+    app.reverse(
+      ROUTES.USERS_EDIT.NAME,
+      { id: user1.id },
+    ),
+  )
 
   expect(resEdit.statusCode).toEqual(302)
 
-  const resDelete = await agent2.delete(app.reverse('usersDelete', { id: user1.id }))
+  const resDelete = await agent2
+    .delete(
+      app.reverse(
+        ROUTES.USERS_DELETE.NAME,
+        { id: user1.id },
+      ),
+    )
 
   expect(resDelete.statusCode).toEqual(302)
 
-  const user1After = await app.objection.models.user.query().findById(user1.id)
+  const user1After = await app.objection.models.user
+    .query()
+    .findById(user1.id)
 
   expect(user1After).toBeDefined()
 })
@@ -86,7 +121,14 @@ test('User cannot edit or delete other users', async () => {
 test('User can edit their own profile without changing password', async () => {
   const { agent, user } = await createAuthenticatedAgent()
   const oldPassword = user.passwordDigest
-  const resEditPage = await agent.get(app.reverse('usersEdit', { id: user.id }))
+
+  const resEditPage = await agent
+    .get(
+      app.reverse(
+        ROUTES.USERS_EDIT.NAME,
+        { id: user.id },
+      ),
+    )
 
   expect(resEditPage.statusCode).toEqual(200)
 
@@ -98,7 +140,7 @@ test('User can edit their own profile without changing password', async () => {
   }
 
   await agent
-    .patch(app.reverse('usersUpdate', { id: user.id }))
+    .patch(app.reverse(ROUTES.USERS_UPDATE.NAME, { id: user.id }))
     .type('form')
     .send({ data: updatedData })
 
@@ -120,11 +162,19 @@ test('User cannot be deleted if associated with a task', async () => {
     executorId: null,
   })
 
-  const res = await agent.delete(app.reverse('usersDelete', { id: user.id }))
+  const res = await agent
+    .delete(
+      app.reverse(
+        ROUTES.USERS_DELETE.NAME,
+        { id: user.id },
+      ),
+    )
 
   expect(res.statusCode).toEqual(302)
 
-  const userAfterDeleteAttempt = await app.objection.models.user.query().findById(user.id)
+  const userAfterDeleteAttempt = await app.objection.models.user
+    .query()
+    .findById(user.id)
 
   expect(userAfterDeleteAttempt).toBeDefined()
 })

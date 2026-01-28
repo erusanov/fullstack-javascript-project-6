@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production node index.js",
-    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "dev": "cross-env NODE_ENV=development node index.js",
     "test": "cross-env NODE_ENV=test node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand"
   },
   "dependencies": {
@@ -15,6 +15,7 @@
     "@fastify/flash": "^5.1.0",
     "@fastify/formbody": "^7.4.0",
     "@fastify/passport": "^2.4.0",
+    "@fastify/secure-session": "^5.2.0",
     "@fastify/session": "^10.7.0",
     "@fastify/static": "^6.12.0",
     "@fastify/swagger": "^8.14.0",
@@ -33,10 +34,12 @@
     "i18next": "^25.7.3",
     "knex": "^3.1.0",
     "objection": "^3.1.5",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
     "pg": "^8.16.3",
     "pug": "^3.0.3",
-    "rollbar": "^2.26.5",
-    "qs": "^6.12.3"
+    "qs": "^6.12.3",
+    "rollbar": "^2.26.5"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.x",
@@ -44,8 +47,8 @@
     "eslint": "^9.x",
     "jest": "^29.x",
     "nodemon": "^2.x",
-    "supertest": "^6.x",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "supertest": "^6.x"
   },
   "engines": {
     "node": "20"

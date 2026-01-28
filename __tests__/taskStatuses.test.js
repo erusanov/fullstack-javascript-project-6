@@ -1,21 +1,22 @@
 import { test, expect } from '@jest/globals'
-import Task from '../models/Task.js'
+import Task from '../src/models/Task.js'
 import {
   app, request, faker, createAuthenticatedAgent, createTaskStatus,
 } from './setup.js'
+import { Routes as ROUTES } from '../src/const/routes.js'
 
 test('GET /statuses', async () => {
   const { agent } = await createAuthenticatedAgent()
-  const res = await agent.get(app.reverse('taskStatuses'))
+  const res = await agent.get(app.reverse(ROUTES.TASK_STATUSES.NAME))
 
   expect(res.statusCode).toEqual(200)
 })
 
 test('GET /statuses (unauthenticated)', async () => {
-  const res = await request(app.server).get(app.reverse('taskStatuses'))
+  const res = await request(app.server).get(app.reverse(ROUTES.TASK_STATUSES.NAME))
 
   expect(res.statusCode).toEqual(302)
-  expect(res.headers.location).toEqual(app.reverse('root'))
+  expect(res.headers.location).toEqual(app.reverse(ROUTES.ROOT.NAME))
 })
 
 test('POST /statuses', async () => {
@@ -25,7 +26,7 @@ test('POST /statuses', async () => {
   }
 
   await agent
-    .post(app.reverse('taskStatusesCreate'))
+    .post(app.reverse(ROUTES.TASK_STATUSES_CREATE.NAME))
     .type('form')
     .send({ data: statusData })
 
@@ -36,22 +37,22 @@ test('POST /statuses', async () => {
 
 test('GET /statuses/:id/edit (unauthenticated)', async () => {
   const taskStatus = await createTaskStatus()
-  const res = await request(app.server).get(app.reverse('taskStatusesEdit', { id: taskStatus.id }))
+  const res = await request(app.server).get(app.reverse(ROUTES.TASK_STATUSES_EDIT.NAME, { id: taskStatus.id }))
 
   expect(res.statusCode).toEqual(302)
-  expect(res.headers.location).toEqual(app.reverse('root'))
+  expect(res.headers.location).toEqual(app.reverse(ROUTES.ROOT.NAME))
 })
 
 test('PATCH /statuses/:id (unauthenticated)', async () => {
   const taskStatus = await createTaskStatus()
   const updatedData = { name: faker.word.noun() }
   const res = await request(app.server)
-    .patch(app.reverse('taskStatusesUpdate', { id: taskStatus.id }))
+    .patch(app.reverse(ROUTES.TASK_STATUSES_UPDATE.NAME, { id: taskStatus.id }))
     .type('form')
     .send({ data: updatedData })
 
   expect(res.statusCode).toEqual(302)
-  expect(res.headers.location).toEqual(app.reverse('root'))
+  expect(res.headers.location).toEqual(app.reverse(ROUTES.ROOT.NAME))
 
   const statusAfterUpdateAttempt = await app.objection.models.taskStatus.query().findById(taskStatus.id)
 
@@ -60,10 +61,10 @@ test('PATCH /statuses/:id (unauthenticated)', async () => {
 
 test('DELETE /statuses/:id (unauthenticated)', async () => {
   const taskStatus = await createTaskStatus()
-  const res = await request(app.server).delete(app.reverse('taskStatusesDelete', { id: taskStatus.id }))
+  const res = await request(app.server).delete(app.reverse(ROUTES.TASK_STATUSES_DELETE.NAME, { id: taskStatus.id }))
 
   expect(res.statusCode).toEqual(302)
-  expect(res.headers.location).toEqual(app.reverse('root'))
+  expect(res.headers.location).toEqual(app.reverse(ROUTES.ROOT.NAME))
 
   const statusAfterDeleteAttempt = await app.objection.models.taskStatus.query().findById(taskStatus.id)
 
@@ -82,7 +83,7 @@ test('DELETE /statuses/:id (with associated tasks)', async () => {
     executorId: null,
   })
 
-  const res = await agent.delete(app.reverse('taskStatusesDelete', { id: taskStatus.id }))
+  const res = await agent.delete(app.reverse(ROUTES.TASK_STATUSES_DELETE.NAME, { id: taskStatus.id }))
 
   expect(res.statusCode).toEqual(302)
 
