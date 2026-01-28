@@ -25,7 +25,7 @@ export default async (app) => {
       name: Routes.SESSIONS_CREATE.NAME,
       preValidation: app.fp.authenticate('form', {
         failureRedirect: app.reverse(Routes.SESSIONS_NEW.NAME),
-        failureFlash: app.t('flash.session.create.error'),
+        failureFlash: app.t('flash.session.errors.create'),
       }),
     },
     async (request, reply) => {

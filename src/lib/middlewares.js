@@ -7,14 +7,14 @@ const checkOwner = (app, { model } = {}) => async (request, reply) => {
       .findById(request.params.id)
 
     if (task.creatorId !== request.user.id) {
-      request.flash('error', reply.t('flash.task.delete.accessDenied'))
+      request.flash('error', reply.t('flash.task.errors.delete.accessDenied'))
 
       return reply.redirect(app.reverse(ROUTES.TASKS.NAME))
     }
   }
   else {
     if (Number(request.params.id) !== request.user.id) {
-      request.flash('error', reply.t('flash.users.edit.accessDenied'))
+      request.flash('error', reply.t('flash.users.errors.edit.accessDenied'))
 
       return reply.redirect(app.reverse(ROUTES.USERS.NAME))
     }

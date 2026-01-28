@@ -51,7 +51,7 @@ block content
             td= task.id
             td
               a(href=app.reverse(ROUTES.TASKS_VIEW.NAME, { id: task.id }))= task.name
-            td= task.status.name
+            td= task.status ? task.status.name : ''
             td= `${task.creator.firstName} ${task.creator.lastName}`
             td= task.executor ? `${task.executor.firstName} ${task.executor.lastName}` : ''
             td= task.createdAt

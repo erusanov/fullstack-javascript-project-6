@@ -50,12 +50,14 @@ export default async (app) => {
       }
       catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.users.create.error'))
+          request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.create.validation'))
 
           return reply.view(UserViews.NEW, { user, errors: e.data })
         }
 
-        throw new Error(reply.t('errors.user.create'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.create.db'))
+
+        return reply.redirect(app.reverse(Routes.USERS_NEW.NAME))
       }
 
       request.flash(FlashStatus.SUCCESS, reply.t('flash.users.create.success'))
@@ -103,12 +105,14 @@ export default async (app) => {
       }
       catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.users.edit.error'))
+          request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.edit.validation'))
 
           return reply.view(UserViews.EDIT, { user: { ...user, ...updatedData }, errors: e.data })
         }
 
-        throw new Error(reply.t('errors.user.update'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.edit.db'))
+
+        return reply.redirect(app.reverse(Routes.USERS_EDIT.NAME, { id: request.params.id }))
       }
 
       request.flash(FlashStatus.SUCCESS, reply.t('flash.users.edit.success'))
@@ -135,11 +139,13 @@ export default async (app) => {
         ])
       }
       catch (e) {
-        throw new Error(reply.t('errors.user.checkTasks'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.checkTasks'))
+
+        return reply.redirect(app.reverse(Routes.USERS.NAME))
       }
 
       if (tasksAsCreator || tasksAsExecutor) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.users.delete.hasTasks'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.delete.hasTasks'))
 
         return reply.redirect(app.reverse(Routes.USERS.NAME))
       }
@@ -150,7 +156,9 @@ export default async (app) => {
           .deleteById(userId)
       }
       catch (e) {
-        throw new Error(reply.t('errors.user.delete'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.delete.db'))
+
+        return reply.redirect(app.reverse(Routes.USERS.NAME))
       }
 
       request.flash(FlashStatus.SUCCESS, reply.t('flash.users.delete.success'))

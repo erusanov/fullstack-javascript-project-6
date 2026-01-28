@@ -102,19 +102,12 @@ export const buildApp = async (options = {}) => {
 
   app.register(fastifyCookie)
 
-  /* app.register(fastifySession, {
-    secret: process.env.SESSION_SECRET,
-    cookie: { secure: false },
-  }) */
-
   app.register(fastifySecureSession, {
     secret: process.env.SESSION_SECRET,
     cookie: {
       path: '/',
     },
   })
-
-  // app.register(fastifyFlash)
 
   app.register(fastifyMethodOverride, { getBody: '_method' })
   app.register(fastifyFormbody, { parser: qs.parse })
@@ -140,7 +133,7 @@ export const buildApp = async (options = {}) => {
     'form',
     {
       failureRedirect: app.reverse(ROUTES.ROOT.NAME),
-      failureFlash: i18next.t('flash.authError'),
+      failureFlash: i18next.t('flash.auth.errors.authError'),
     },
   )(...args))
 

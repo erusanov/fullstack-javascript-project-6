@@ -100,7 +100,7 @@ test('POST /tasks without status should fail', async () => {
   expect(task).toBeUndefined()
   expect(res.text).toContain(taskName)
   expect(res.text).toContain(taskDescription)
-  expect(res.text).toContain(app.t('flash.task.create.error'))
+  expect(res.text).toContain(app.t('flash.task.errors.create.validation'))
 })
 
 test('GET /tasks/:id/edit', async () => {

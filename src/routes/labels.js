@@ -50,12 +50,14 @@ export default async (app) => {
       }
       catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.label.create.error'))
+          request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.create.validation'))
 
           return reply.view(LabelViews.NEW, { label, errors: e.data })
         }
 
-        throw new Error(reply.t('errors.label.create'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.create.db'))
+
+        return reply.view(LabelViews.NEW, { label })
       }
 
       request.flash(FlashStatus.SUCCESS, reply.t('flash.label.create.success'))
@@ -94,7 +96,7 @@ export default async (app) => {
       }
       catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.label.edit.error'))
+          request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.edit.validation'))
 
           return reply.view(
             LabelViews.EDIT,
@@ -108,7 +110,17 @@ export default async (app) => {
           )
         }
 
-        throw new Error(reply.t('errors.label.update'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.edit.db'))
+
+        return reply.view(
+            LabelViews.EDIT,
+            {
+                label: {
+                    ...label,
+                    ...updatedData,
+                }
+            },
+        )
       }
 
       request.flash(FlashStatus.SUCCESS, reply.t('flash.label.edit.success'))
@@ -129,7 +141,7 @@ export default async (app) => {
         .withGraphFetched('tasks')
 
       if (label.tasks.length > 0) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.label.delete.hasTasks'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.delete.hasTasks'))
 
         return reply.redirect(app.reverse(Routes.LABELS.NAME))
       }
@@ -140,7 +152,9 @@ export default async (app) => {
           .deleteById(request.params.id)
       }
       catch (e) {
-        throw new Error(reply.t('errors.label.delete'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.delete.db'))
+
+        return reply.redirect(app.reverse(Routes.LABELS.NAME))
       }
 
       request.flash(FlashStatus.SUCCESS, reply.t('flash.label.delete.success'))

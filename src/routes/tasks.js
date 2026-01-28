@@ -93,15 +93,13 @@ export default async (app) => {
           .insert(processedTaskData)
       }
       catch (e) {
-        if (e instanceof ValidationError) {
-          const errorMessage = reply.t('flash.task.create.error')
-
           const [users, statuses, labels] = await Promise.all([
-            app.objection.models.user.query(),
-            app.objection.models.taskStatus.query(),
-            app.objection.models.label.query(),
+              app.objection.models.user.query(),
+              app.objection.models.taskStatus.query(),
+              app.objection.models.label.query(),
           ])
 
+        if (e instanceof ValidationError) {
           return reply
             .code(422)
             .view(
@@ -112,12 +110,22 @@ export default async (app) => {
                 statuses,
                 labels,
                 errors: e.data,
-                flash: { [FlashStatus.ERROR]: [errorMessage] },
+                flash: { [FlashStatus.ERROR]: [reply.t('flash.task.errors.create.validation')] },
               },
             )
         }
 
-        throw new Error(reply.t('errors.task.create'))
+        return reply
+            .view(
+                TaskViews.NEW,
+                {
+                    task: request.body.data,
+                    users,
+                    statuses,
+                    labels,
+                    flash: { [FlashStatus.ERROR]: [reply.t('flash.task.errors.create.db')] },
+                },
+            )
       }
 
       if (labelIds) {
@@ -127,7 +135,9 @@ export default async (app) => {
             .relate(labelIds)
         }
         catch (e) {
-          throw new Error(reply.t('errors.task.addLabels'))
+          request.flash(FlashStatus.ERROR, reply.t('flash.task.errors.addLabels'))
+
+          return reply.redirect(app.reverse(Routes.TASKS_NEW.NAME))
         }
       }
 
@@ -143,11 +153,14 @@ export default async (app) => {
       preHandler: [app.authenticate],
     },
     async (request, reply) => {
-      const task = await app.objection.models.task.query()
-        .findById(request.params.id)
-        .withGraphJoined('[status, creator, executor, labels]')
+        const [task, users, statuses, labels] = await Promise.all([
+            app.objection.models.task.query().findById(request.params.id).withGraphJoined('labels'),
+            app.objection.models.user.query(),
+            app.objection.models.taskStatus.query(),
+            app.objection.models.label.query(),
+        ])
 
-      return reply.view(TaskViews.VIEW, { task })
+        return reply.view(TaskViews.EDIT, { task, users, statuses, labels })
     },
   )
 
@@ -185,13 +198,15 @@ export default async (app) => {
           .findById(request.params.id)
       }
       catch (e) {
-        throw new Error(reply.t('errors.task.load'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.task.errors.load'))
+
+        return reply.redirect(app.reverse(Routes.TASKS.NAME))
       }
 
       const processedTaskData = {
         ...taskData,
-        statusId: task.id ?? Number(taskData.statusId),
-        executorId: task.id ?? Number(taskData.executorId),
+        statusId: Number(taskData.statusId) || task.statusId,
+        executorId: Number(taskData.executorId) || null,
       }
 
       delete processedTaskData.creatorId
@@ -209,7 +224,7 @@ export default async (app) => {
 
           return reply
             .code(422)
-            .flash(FlashStatus.ERROR, reply.t('flash.task.edit.error'))
+            .flash(FlashStatus.ERROR, reply.t('flash.task.errors.edit.validation'))
             .view(
               TaskViews.EDIT,
               {
@@ -222,7 +237,9 @@ export default async (app) => {
             )
         }
 
-        throw new Error(reply.t('errors.task.update'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.task.errors.edit.db'))
+
+        return reply.redirect(app.reverse(Routes.TASKS_EDIT.NAME, { id: request.params.id }))
       }
 
       if (labelIds) {
@@ -230,14 +247,18 @@ export default async (app) => {
           await task.$relatedQuery('labels').unrelate()
         }
         catch (e) {
-          throw new Error(reply.t('errors.task.updateLabels'))
+          request.flash(FlashStatus.ERROR, reply.t('flash.task.errors.updateLabels'))
+
+          return reply.redirect(app.reverse(Routes.TASKS_EDIT.NAME, { id: request.params.id }))
         }
 
         try {
           await task.$relatedQuery('labels').relate(labelIds)
         }
         catch (e) {
-          throw new Error(reply.t('errors.task.updateLabels'))
+          request.flash(FlashStatus.ERROR, reply.t('flash.task.errors.updateLabels'))
+
+          return reply.redirect(app.reverse(Routes.TASKS_EDIT.NAME, { id: request.params.id }))
         }
       }
       else {
@@ -245,7 +266,9 @@ export default async (app) => {
           await task.$relatedQuery('labels').unrelate()
         }
         catch (e) {
-          throw new Error(reply.t('errors.task.updateLabels'))
+          request.flash(FlashStatus.ERROR, reply.t('flash.task.errors.updateLabels'))
+
+          return reply.redirect(app.reverse(Routes.TASKS_EDIT.NAME, { id: request.params.id }))
         }
       }
 
@@ -265,7 +288,9 @@ export default async (app) => {
         await app.objection.models.task.query().deleteById(request.params.id)
       }
       catch (e) {
-        throw new Error(reply.t('errors.task.delete'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.task.errors.delete.db'))
+
+        return reply.redirect(app.reverse(Routes.TASKS.NAME))
       }
 
       request.flash(FlashStatus.SUCCESS, reply.t('flash.task.delete.success'))
