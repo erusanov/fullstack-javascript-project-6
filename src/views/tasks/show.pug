@@ -1,0 +1,32 @@
+extends ../layouts/application
+
+block content
+  - const createdAt = new Date(task.createdAt).toLocaleString()
+
+  h1.display-4.fw-bold.mt-4= task.name
+
+  .row.mt-5.p-5.shadow.bg-white
+    .col-12.col-md-8.order-2.order-md-1
+      .lead.fw-normal.mb-4= task.description || ''
+    .col-12.col-md-4.border-start.px-3.order-1.order-md-2.mb-3.mb-md-0
+      if task.status
+        .mb-2
+          span.me-1.badge.bg-danger.text-white= task.status.name
+      if task.labels && task.labels.length > 0
+        .d-flex.flex-wrap.mb-3
+          each label in task.labels
+            span.badge.bg-secondary.text-white.me-1= label.name
+      .d-flex.flex-wrap.mb-3
+        span.text-muted.me-2= t('views.task.creator')
+        span= `${task.creator.firstName} ${task.creator.lastName}`
+      .d-flex.flex-wrap.mb-3
+        span.text-muted.me-2= t('views.task.executor')
+        span= task.executor ? `${task.executor.firstName} ${task.executor.lastName}` : ''
+      .d-flex.flex-wrap.mb-3
+        span.text-muted.me-2= t('views.task.createdAt')
+        span= createdAt
+      .d-flex.flex-wrap
+        a.btn.btn-primary.me-1(href=app.reverse(ROUTES.TASKS_EDIT.NAME, { id: task.id }))= t('views.task.edit')
+        form(action=app.reverse(ROUTES.TASKS_DELETE.NAME, { id: task.id }) method='post')
+          input(type="hidden" name="_method" value="delete")
+          input.btn.btn-danger(type="submit" value=t('views.task.delete'))

@@ -124,6 +124,6 @@ const Routes = Object.freeze({
     URL: '/tasks/:id',
     NAME: 'tasksDelete',
   }),
-})
+});
 
-export { Routes }
+export default Routes;

@@ -1,11 +1,13 @@
-import path from 'path'
-import { fileURLToPath } from 'url'
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { knexSnakeCaseMappers } from 'objection';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default {
   development: {
+    ...knexSnakeCaseMappers(),
     client: 'sqlite3',
     useNullAsDefault: true,
     connection: {
@@ -19,6 +21,7 @@ export default {
     },
   },
   test: {
+    ...knexSnakeCaseMappers(),
     client: 'sqlite3',
     useNullAsDefault: true,
     connection: {
@@ -32,6 +35,7 @@ export default {
     },
   },
   production: {
+    ...knexSnakeCaseMappers(),
     client: 'pg',
     connection: process.env.DATABASE_URL,
     migrations: {
@@ -41,4 +45,4 @@ export default {
       directory: path.resolve(__dirname, 'seeds'),
     },
   },
-}
+};

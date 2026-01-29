@@ -1,9 +1,10 @@
-import { ValidationError } from 'objection'
-import { Routes } from '../const/routes.js'
-import { Views } from '../const/views.js'
-import { FlashStatus } from '../const/flashStatus.js'
+import { ValidationError } from 'objection';
+import Routes from '../const/routes.js';
+import Views from '../const/views.js';
+import FlashStatus from '../const/flashStatus.js';
+import { applyFlashError, normalizeValidationErrors } from '../lib/validation.js';
 
-const { TASK_STATUSES: TaskStatusViews } = Views
+const { TASK_STATUSES: TaskStatusViews } = Views;
 
 export default async (app) => {
   app.get(
@@ -19,7 +20,7 @@ export default async (app) => {
           taskStatuses: await app.objection.models.taskStatus.query(),
         },
       ),
-  )
+  );
 
   app.get(
     Routes.TASK_STATUSES_NEW.URL,
@@ -34,7 +35,7 @@ export default async (app) => {
           taskStatus: {},
         },
       ),
-  )
+  );
 
   app.post(
     Routes.TASK_STATUSES_CREATE.URL,
@@ -43,29 +44,30 @@ export default async (app) => {
       preHandler: app.authenticate,
     },
     async (request, reply) => {
-      const taskStatus = request.body.data
+      const taskStatus = request.body.data;
 
       try {
         await app.objection.models.taskStatus
           .query()
-          .insert(taskStatus)
-      }
-      catch (e) {
+          .insert(taskStatus);
+      } catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.create.validation'))
+          applyFlashError(request, reply, 'flash.taskStatus.errors.create.validation');
 
-          return reply.view(TaskStatusViews.NEW, { taskStatus, errors: e.data })
+          return reply
+            .code(422)
+            .view(TaskStatusViews.NEW, { taskStatus, errors: normalizeValidationErrors(e.data) });
         }
 
-        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.create.db'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.create.db'));
 
-        return reply.redirect(app.reverse(Routes.TASK_STATUSES_NEW.NAME))
+        return reply.redirect(app.reverse(Routes.TASK_STATUSES_NEW.NAME));
       }
 
-      request.flash(FlashStatus.INFO, reply.t('flash.taskStatus.create.success'))
-      reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME))
+      request.flash(FlashStatus.INFO, reply.t('flash.taskStatus.create.success'));
+      return reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME));
     },
-  )
+  );
 
   app.get(
     Routes.TASK_STATUSES_EDIT.URL,
@@ -82,7 +84,7 @@ export default async (app) => {
             .findById(request.params.id),
         },
       ),
-  )
+  );
 
   app.patch(
     Routes.TASK_STATUSES_UPDATE.URL,
@@ -93,37 +95,38 @@ export default async (app) => {
     async (request, reply) => {
       const taskStatus = await app.objection.models.taskStatus
         .query()
-        .findById(request.params.id)
+        .findById(request.params.id);
 
-      const { _method, ...updatedData } = request.body.data
+      const { _method, ...updatedData } = request.body.data;
 
       try {
         await taskStatus
           .$query()
-          .patch(updatedData)
-      }
-      catch (e) {
+          .patch(updatedData);
+      } catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.edit.validation'))
+          applyFlashError(request, reply, 'flash.taskStatus.errors.edit.validation');
 
           return reply.view(
             TaskStatusViews.EDIT,
             {
               taskStatus: { ...taskStatus, ...updatedData },
-              errors: e.data,
+              errors: normalizeValidationErrors(e.data),
             },
-          )
+          );
         }
 
-        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.edit.db'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.edit.db'));
 
-        return reply.redirect(app.reverse(Routes.TASK_STATUSES_EDIT.NAME, { id: request.params.id }))
+        return reply
+          .code(422)
+          .redirect(app.reverse(Routes.TASK_STATUSES_EDIT.NAME, { id: request.params.id }));
       }
 
-      request.flash(FlashStatus.INFO, reply.t('flash.taskStatus.edit.success'))
-      reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME))
+      request.flash(FlashStatus.INFO, reply.t('flash.taskStatus.edit.success'));
+      return reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME));
     },
-  )
+  );
 
   app.delete(
     Routes.TASK_STATUSES_DELETE.URL,
@@ -132,40 +135,38 @@ export default async (app) => {
       preHandler: app.authenticate,
     },
     async (request, reply) => {
-      const statusId = request.params.id
+      const statusId = request.params.id;
 
-      let associatedTasks
+      let associatedTasks;
       try {
         associatedTasks = await app.objection.models.task
           .query()
           .where('statusId', statusId)
-          .first()
-      }
-      catch (e) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.checkTasks'))
+          .first();
+      } catch (e) {
+        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.checkTasks'));
 
-        return reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME))
+        return reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME));
       }
 
       if (associatedTasks) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.delete.hasTasks'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.delete.hasTasks'));
 
-        return reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME))
+        return reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME));
       }
 
       try {
         await app.objection.models.taskStatus
           .query()
-          .deleteById(statusId)
-      }
-      catch (e) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.delete.db'))
+          .deleteById(statusId);
+      } catch (e) {
+        request.flash(FlashStatus.ERROR, reply.t('flash.taskStatus.errors.delete.db'));
 
-        return reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME))
+        return reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME));
       }
 
-      request.flash(FlashStatus.SUCCESS, reply.t('flash.taskStatus.delete.success'))
-      reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME))
+      request.flash(FlashStatus.SUCCESS, reply.t('flash.taskStatus.delete.success'));
+      return reply.redirect(app.reverse(Routes.TASK_STATUSES.NAME));
     },
-  )
-}
+  );
+};

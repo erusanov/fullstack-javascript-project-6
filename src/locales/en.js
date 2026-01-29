@@ -1,0 +1,223 @@
+export default {
+  translation: {
+    app: {
+      title: 'Hexlet Fastify App',
+      name: 'Hexlet App',
+      welcome: 'Welcome to Hexlet Fastify App!',
+      description: 'This is a boilerplate for a Fastify Node.js application.',
+      users: 'Users',
+      signIn: 'Sign In',
+      signUp: 'Sign Up',
+      signOut: 'Sign Out',
+      taskStatuses: 'Task Statuses',
+      tasks: 'Tasks',
+      labels: 'Labels',
+    },
+    layouts: {
+      application: {
+        login: 'Login',
+        signup: 'Sign Up',
+        users: 'Users',
+      },
+    },
+    flash: {
+      users: {
+        create: {
+          success: 'User has been registered successfully!',
+        },
+        edit: {
+          success: 'User has been updated successfully!',
+        },
+        delete: {
+          success: 'User has been deleted successfully!',
+        },
+        errors: {
+          create: {
+            validation: 'Failed to register user.',
+            db: 'Failed to create user in database.',
+          },
+          edit: {
+            validation: 'Failed to update user.',
+            db: 'Failed to update user in database.',
+            accessDenied: 'You cannot edit or delete another user.',
+          },
+          delete: {
+            db: 'Failed to delete user in database.',
+            hasTasks: 'Cannot delete user with linked tasks',
+          },
+          checkTasks: 'Failed to check tasks linked to user.',
+        },
+      },
+      session: {
+        create: {
+          success: 'You are logged in!',
+        },
+        delete: {
+          success: 'You are logged out!',
+        },
+        errors: {
+          create: 'Invalid email or password.',
+        },
+      },
+      taskStatus: {
+        create: {
+          success: 'Task status has been created successfully!',
+        },
+        edit: {
+          success: 'Task status has been updated successfully!',
+        },
+        delete: {
+          success: 'Task status has been deleted successfully!',
+        },
+        errors: {
+          create: {
+            validation: 'Failed to create task status.',
+            db: 'Failed to create task status in database.',
+          },
+          edit: {
+            validation: 'Failed to update task status.',
+            db: 'Failed to update task status in database.',
+          },
+          delete: {
+            db: 'Failed to delete task status in database.',
+            hasTasks: 'Cannot delete status with linked tasks',
+          },
+          checkTasks: 'Failed to check tasks linked to status.',
+        },
+      },
+      task: {
+        create: {
+          success: 'Task has been created successfully!',
+        },
+        edit: {
+          success: 'Task has been updated successfully!',
+        },
+        delete: {
+          success: 'Task has been deleted successfully!',
+        },
+        errors: {
+          create: {
+            validation: 'Failed to create task.',
+            db: 'Failed to create task in database.',
+          },
+          edit: {
+            validation: 'Failed to update task.',
+            db: 'Failed to update task in database.',
+          },
+          delete: {
+            db: 'Failed to delete task in database.',
+            accessDenied: 'Access denied! You can only delete your own tasks.',
+          },
+          addLabels: 'Failed to attach labels to task.',
+          load: 'Failed to load task for editing.',
+          updateLabels: 'Failed to update task labels.',
+        },
+      },
+      label: {
+        create: {
+          success: 'Label has been created successfully!',
+        },
+        edit: {
+          success: 'Label has been updated successfully!',
+        },
+        delete: {
+          success: 'Label has been deleted successfully!',
+        },
+        errors: {
+          create: {
+            validation: 'Failed to create label.',
+            db: 'Failed to create label in database.',
+          },
+          edit: {
+            validation: 'Failed to update label.',
+            db: 'Failed to update label in database.',
+          },
+          delete: {
+            db: 'Failed to delete label in database.',
+            hasTasks: 'Cannot delete label with linked tasks',
+          },
+        },
+      },
+      auth: {
+        errors: {
+          authError: 'Access denied! Please log in.',
+          accessDenied: 'Access denied! You can only modify your own data.',
+        },
+      },
+    },
+    views: {
+      users: {
+        title: 'Users',
+        id: 'ID',
+        fullName: 'Full Name',
+        email: 'Email',
+        createdAt: 'Created At',
+        actions: 'Actions',
+        edit: 'Edit',
+        delete: 'Delete',
+        new: 'New User',
+        firstName: 'First Name',
+        lastName: 'LastName',
+        password: 'Password',
+        confirmPassword: 'Confirm Password',
+        register: 'Register',
+        editUser: 'Edit User',
+      },
+      session: {
+        title: 'Sign In',
+        signIn: 'Sign In',
+        email: 'Email',
+        password: 'Password',
+      },
+      taskStatus: {
+        id: 'ID',
+        name: 'Name',
+        createdAt: 'Created At',
+        actions: 'Actions',
+        edit: 'Edit',
+        delete: 'Delete',
+        new: 'New Status',
+        statuses: 'Task Statuses',
+        create: 'Create',
+        editStatus: 'Edit Task Status',
+      },
+      task: {
+        id: 'ID',
+        name: 'Name',
+        description: 'Description',
+        status: 'Status',
+        creator: 'Creator',
+        executor: 'Executor',
+        createdAt: 'Created At',
+        actions: 'Actions',
+        edit: 'Edit',
+        delete: 'Delete',
+        new: 'New Task',
+        tasks: 'Tasks',
+        create: 'Create',
+        editTask: 'Edit Task',
+        viewTask: 'View Task',
+        labels: 'Labels',
+        filter: {
+          status: 'Status',
+          executor: 'Executor',
+          label: 'Label',
+          showMyTasks: 'Show my tasks',
+          apply: 'Apply',
+        },
+      },
+      label: {
+        id: 'ID',
+        name: 'Name',
+        createdAt: 'Created At',
+        actions: 'Actions',
+        edit: 'Edit',
+        delete: 'Delete',
+        new: 'New Label',
+        labels: 'Labels',
+        create: 'Create',
+        editLabel: 'Edit Label',
+      },
+    },
+  },
+};

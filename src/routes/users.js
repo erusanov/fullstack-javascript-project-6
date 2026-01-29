@@ -1,12 +1,13 @@
-import { ValidationError } from 'objection'
-import { checkOwner } from '../lib/middlewares.js'
-import { Routes } from '../const/routes.js'
-import { Views } from '../const/views.js'
-import { FlashStatus } from '../const/flashStatus.js'
+import { ValidationError } from 'objection';
+import checkOwner from '../lib/middlewares.js';
+import { applyFlashError, normalizeValidationErrors } from '../lib/validation.js';
+import Routes from '../const/routes.js';
+import Views from '../const/views.js';
+import FlashStatus from '../const/flashStatus.js';
 
-const { USERS: UserViews } = Views
+const { USERS: UserViews } = Views;
 
-export default async (app) => {
+export default async function users(app) {
   app.get(
     Routes.USERS.URL,
     {
@@ -19,7 +20,7 @@ export default async (app) => {
           users: await app.objection.models.user.query(),
         },
       ),
-  )
+  );
 
   app.get(
     Routes.USERS_NEW.URL,
@@ -33,7 +34,7 @@ export default async (app) => {
           user: {},
         },
       ),
-  )
+  );
 
   app.post(
     Routes.USERS_CREATE.URL,
@@ -41,28 +42,28 @@ export default async (app) => {
       name: Routes.USERS_CREATE.NAME,
     },
     async (request, reply) => {
-      const user = request.body.data || {}
+      const user = request.body.data || {};
 
       try {
         await app.objection.models.user
           .query()
-          .insert(user)
-      }
-      catch (e) {
+          .insert(user);
+      } catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.create.validation'))
+          applyFlashError(request, reply, 'flash.users.errors.create.validation');
 
-          return reply.view(UserViews.NEW, { user, errors: e.data })
+          return reply.view(UserViews.NEW, { user, errors: normalizeValidationErrors(e.data) });
         }
 
-        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.create.db'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.create.db'));
 
-        return reply.redirect(app.reverse(Routes.USERS_NEW.NAME))
+        return reply.redirect(app.reverse(Routes.USERS_NEW.NAME));
       }
 
-      request.flash(FlashStatus.SUCCESS, reply.t('flash.users.create.success'))
-      reply.redirect(app.reverse(Routes.ROOT.NAME))
-    })
+      request.flash(FlashStatus.SUCCESS, reply.t('flash.users.create.success'));
+      return reply.redirect(app.reverse(Routes.ROOT.NAME));
+    },
+  );
 
   app.get(
     Routes.USERS_EDIT.URL,
@@ -79,7 +80,7 @@ export default async (app) => {
             .findById(request.params.id),
         },
       ),
-  )
+  );
 
   app.patch(
     Routes.USERS_UPDATE.URL,
@@ -88,37 +89,36 @@ export default async (app) => {
       preHandler: [app.authenticate, checkOwner(app)],
     },
     async (request, reply) => {
-      const { _method, ...updatedData } = request.body.data
+      const { _method, ...updatedData } = request.body.data;
 
       const user = await app.objection.models.user
         .query()
-        .findById(request.params.id)
+        .findById(request.params.id);
 
       try {
         if (updatedData.password === '') {
-          delete updatedData.password
+          delete updatedData.password;
         }
 
         await user
           .$query()
-          .patch(updatedData)
-      }
-      catch (e) {
+          .patch(updatedData);
+      } catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.edit.validation'))
+          request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.edit.validation'));
 
-          return reply.view(UserViews.EDIT, { user: { ...user, ...updatedData }, errors: e.data })
+          return reply.view(UserViews.EDIT, { user: { ...user, ...updatedData }, errors: e.data });
         }
 
-        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.edit.db'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.edit.db'));
 
-        return reply.redirect(app.reverse(Routes.USERS_EDIT.NAME, { id: request.params.id }))
+        return reply.redirect(app.reverse(Routes.USERS_EDIT.NAME, { id: request.params.id }));
       }
 
-      request.flash(FlashStatus.SUCCESS, reply.t('flash.users.edit.success'))
-      reply.redirect(app.reverse(Routes.USERS.NAME))
+      request.flash(FlashStatus.SUCCESS, reply.t('flash.users.edit.success'));
+      return reply.redirect(app.reverse(Routes.USERS.NAME));
     },
-  )
+  );
 
   app.delete(
     Routes.USERS_DELETE.URL,
@@ -127,42 +127,40 @@ export default async (app) => {
       preHandler: [app.authenticate, checkOwner(app)],
     },
     async (request, reply) => {
-      const { task, user } = app.objection.models
-      const userId = request.params.id
+      const { task, user } = app.objection.models;
+      const userId = request.params.id;
 
-      let tasksAsCreator
-      let tasksAsExecutor
+      let tasksAsCreator;
+      let tasksAsExecutor;
       try {
         [tasksAsCreator, tasksAsExecutor] = await Promise.all([
           task.query().where('creatorId', userId).first(),
           task.query().where('executorId', userId).first(),
-        ])
-      }
-      catch (e) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.checkTasks'))
+        ]);
+      } catch (e) {
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.checkTasks'));
 
-        return reply.redirect(app.reverse(Routes.USERS.NAME))
+        return reply.redirect(app.reverse(Routes.USERS.NAME));
       }
 
       if (tasksAsCreator || tasksAsExecutor) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.delete.hasTasks'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.delete.hasTasks'));
 
-        return reply.redirect(app.reverse(Routes.USERS.NAME))
+        return reply.redirect(app.reverse(Routes.USERS.NAME));
       }
 
       try {
         await user
           .query()
-          .deleteById(userId)
-      }
-      catch (e) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.delete.db'))
+          .deleteById(userId);
+      } catch (e) {
+        request.flash(FlashStatus.ERROR, reply.t('flash.users.errors.delete.db'));
 
-        return reply.redirect(app.reverse(Routes.USERS.NAME))
+        return reply.redirect(app.reverse(Routes.USERS.NAME));
       }
 
-      request.flash(FlashStatus.SUCCESS, reply.t('flash.users.delete.success'))
-      reply.redirect(app.reverse(Routes.USERS.NAME))
+      request.flash(FlashStatus.SUCCESS, reply.t('flash.users.delete.success'));
+      return reply.redirect(app.reverse(Routes.USERS.NAME));
     },
-  )
+  );
 }

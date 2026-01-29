@@ -1,9 +1,9 @@
-import { Model } from 'objection'
-import bcrypt from 'bcrypt'
+import { Model } from 'objection';
+import bcrypt from 'bcrypt';
 
 class User extends Model {
   static get tableName() {
-    return 'users'
+    return 'users';
   }
 
   static get jsonSchema() {
@@ -19,24 +19,24 @@ class User extends Model {
         password: { type: 'string', minLength: 3 },
         passwordDigest: { type: 'string' },
       },
-    }
+    };
   }
 
   $beforeInsert() {
-    this.passwordDigest = bcrypt.hashSync(this.password, 10)
-    delete this.password
+    this.passwordDigest = bcrypt.hashSync(this.password, 10);
+    delete this.password;
   }
 
   $beforeUpdate() {
     if (this.password) {
-      this.passwordDigest = bcrypt.hashSync(this.password, 10)
-      delete this.password
+      this.passwordDigest = bcrypt.hashSync(this.password, 10);
+      delete this.password;
     }
   }
 
   verifyPassword(password) {
-    return bcrypt.compareSync(password, this.passwordDigest)
+    return bcrypt.compareSync(password, this.passwordDigest);
   }
 }
 
-export default User
+export default User;
