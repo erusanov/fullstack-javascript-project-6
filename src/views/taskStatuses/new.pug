@@ -7,7 +7,7 @@ block content
     form(action=app.reverse(ROUTES.TASK_STATUSES_CREATE.NAME) method='post')
       .mb-3
         label.form-label(for='data_name')= t('views.taskStatus.name')
-        input.form-control(type='text' id='data_name' name='data[name]' value=taskStatus.name)
+        input.form-control(type='text' id='data_name' name='data[name]' value=taskStatus.name class=(errors && errors.name ? 'is-invalid' : ''))
         if errors && errors.name
-          .text-danger= errors.name.message
+          div.invalid-feedback= errors.name.message
       button.btn.btn-primary(type='submit')= t('views.taskStatus.create')

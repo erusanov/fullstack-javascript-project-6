@@ -1,129 +1,131 @@
-import { test, expect } from '@jest/globals'
+import { test, expect } from '@jest/globals';
 import {
   app, request, faker, createAuthenticatedAgent, createTaskStatus,
-} from './setup.js'
-import { Routes as ROUTES } from '../src/const/routes.js'
+} from './setup.js';
+import Routes from '../src/const/routes.js';
 
 test('GET /labels', async () => {
-  const { agent } = await createAuthenticatedAgent()
-  const res = await agent.get(app.reverse(ROUTES.LABELS.NAME))
+  const { agent } = await createAuthenticatedAgent();
+  const res = await agent.get(app.reverse(Routes.LABELS.NAME));
 
-  expect(res.statusCode).toEqual(200)
-})
+  expect(res.statusCode).toEqual(200);
+});
 
 test('GET /labels (unauthenticated)', async () => {
-  const res = await request(app.server).get(app.reverse(ROUTES.LABELS.NAME))
+  const res = await request(app.server).get(app.reverse(Routes.LABELS.NAME));
 
-  expect(res.statusCode).toEqual(302)
-  expect(res.headers.location).toEqual(app.reverse(ROUTES.ROOT.NAME))
-})
+  expect(res.statusCode).toEqual(302);
+  expect(res.headers.location).toEqual(app.reverse(Routes.ROOT.NAME));
+});
 
 test('GET /labels/new', async () => {
-  const { agent } = await createAuthenticatedAgent()
-  const res = await agent.get(app.reverse(ROUTES.LABELS_NEW.NAME))
+  const { agent } = await createAuthenticatedAgent();
+  const res = await agent.get(app.reverse(Routes.LABELS_NEW.NAME));
 
-  expect(res.statusCode).toEqual(200)
-})
+  expect(res.statusCode).toEqual(200);
+});
 
 test('POST /labels', async () => {
-  const { agent } = await createAuthenticatedAgent()
-  const labelData = { name: faker.lorem.word() }
+  const { agent } = await createAuthenticatedAgent();
+  const labelData = { name: faker.lorem.word() };
 
   await agent
-    .post(app.reverse(ROUTES.LABELS_CREATE.NAME))
+    .post(app.reverse(Routes.LABELS_CREATE.NAME))
     .type('form')
-    .send({ data: labelData })
+    .send({ data: labelData });
 
-  const label = await app.objection.models.label.query().findOne({ name: labelData.name })
+  const label = await app.objection.models.label.query().findOne({ name: labelData.name });
 
-  expect(label).toBeDefined()
-})
+  expect(label).toBeDefined();
+});
 
 test('GET /labels/:id/edit', async () => {
-  const { agent } = await createAuthenticatedAgent()
-  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() })
-  const res = await agent.get(app.reverse(ROUTES.LABELS_EDIT.NAME, { id: label.id }))
+  const { agent } = await createAuthenticatedAgent();
+  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() });
+  const res = await agent.get(app.reverse(Routes.LABELS_EDIT.NAME, { id: label.id }));
 
-  expect(res.statusCode).toEqual(200)
-})
+  expect(res.statusCode).toEqual(200);
+});
 
 test('GET /labels/:id/edit (unauthenticated)', async () => {
-  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() })
-  const res = await request(app.server).get(app.reverse(ROUTES.LABELS_EDIT.NAME, { id: label.id }))
+  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() });
+  const res = await request(app.server).get(app.reverse(Routes.LABELS_EDIT.NAME, { id: label.id }));
 
-  expect(res.statusCode).toEqual(302)
-  expect(res.headers.location).toEqual(app.reverse(ROUTES.ROOT.NAME))
-})
+  expect(res.statusCode).toEqual(302);
+  expect(res.headers.location).toEqual(app.reverse(Routes.ROOT.NAME));
+});
 
 test('PATCH /labels/:id', async () => {
-  const { agent } = await createAuthenticatedAgent()
-  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() })
-  const updatedData = { name: faker.lorem.word() }
+  const { agent } = await createAuthenticatedAgent();
+  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() });
+  const updatedData = { name: faker.lorem.word() };
 
   await agent
-    .patch(app.reverse(ROUTES.LABELS_UPDATE.NAME, { id: label.id }))
+    .patch(app.reverse(Routes.LABELS_UPDATE.NAME, { id: label.id }))
     .type('form')
-    .send({ data: updatedData })
+    .send({ data: updatedData });
 
-  const updatedLabel = await app.objection.models.label.query().findById(label.id)
+  const updatedLabel = await app.objection.models.label.query().findById(label.id);
 
-  expect(updatedLabel.name).toEqual(updatedData.name)
-})
+  expect(updatedLabel.name).toEqual(updatedData.name);
+});
 
 test('PATCH /labels/:id (unauthenticated)', async () => {
-  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() })
-  const updatedData = { name: faker.lorem.word() }
+  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() });
+  const updatedData = { name: faker.lorem.word() };
   const res = await request(app.server)
-    .patch(app.reverse(ROUTES.LABELS_UPDATE.NAME, { id: label.id }))
+    .patch(app.reverse(Routes.LABELS_UPDATE.NAME, { id: label.id }))
     .type('form')
-    .send({ data: updatedData })
+    .send({ data: updatedData });
 
-  expect(res.statusCode).toEqual(302)
-  expect(res.headers.location).toEqual(app.reverse(ROUTES.ROOT.NAME))
+  expect(res.statusCode).toEqual(302);
+  expect(res.headers.location).toEqual(app.reverse(Routes.ROOT.NAME));
 
-  const labelAfterUpdateAttempt = await app.objection.models.label.query().findById(label.id)
+  const labelAfterUpdateAttempt = await app.objection.models.label.query().findById(label.id);
 
-  expect(labelAfterUpdateAttempt.name).toEqual(label.name)
-})
+  expect(labelAfterUpdateAttempt.name).toEqual(label.name);
+});
 
 test('DELETE /labels/:id', async () => {
-  const { agent } = await createAuthenticatedAgent()
-  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() })
+  const { agent } = await createAuthenticatedAgent();
+  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() });
 
-  await agent.delete(app.reverse(ROUTES.LABELS_DELETE.NAME, { id: label.id }))
+  await agent.delete(app.reverse(Routes.LABELS_DELETE.NAME, { id: label.id }));
 
-  const deletedLabel = await app.objection.models.label.query().findById(label.id)
+  const deletedLabel = await app.objection.models.label.query().findById(label.id);
 
-  expect(deletedLabel).toBeUndefined()
-})
+  expect(deletedLabel).toBeUndefined();
+});
 
 test('DELETE /labels/:id (unauthenticated)', async () => {
-  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() })
-  const res = await request(app.server).delete(app.reverse(ROUTES.LABELS_DELETE.NAME, { id: label.id }))
+  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() });
 
-  expect(res.statusCode).toEqual(302)
-  expect(res.headers.location).toEqual(app.reverse(ROUTES.ROOT.NAME))
+  const res = await request(app.server)
+    .delete(app.reverse(Routes.LABELS_DELETE.NAME, { id: label.id }));
 
-  const labelAfterDeleteAttempt = await app.objection.models.label.query().findById(label.id)
+  expect(res.statusCode).toEqual(302);
+  expect(res.headers.location).toEqual(app.reverse(Routes.ROOT.NAME));
 
-  expect(labelAfterDeleteAttempt).toBeDefined()
-})
+  const labelAfterDeleteAttempt = await app.objection.models.label.query().findById(label.id);
+
+  expect(labelAfterDeleteAttempt).toBeDefined();
+});
 
 test('DELETE /labels/:id (with associated tasks)', async () => {
-  const { agent, user } = await createAuthenticatedAgent()
-  const status = await createTaskStatus()
-  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() })
+  const { agent, user } = await createAuthenticatedAgent();
+  const status = await createTaskStatus();
+  const label = await app.objection.models.label.query().insert({ name: faker.lorem.word() });
   const task = await app.objection.models.task.query().insert({
     name: faker.lorem.sentence(),
     statusId: status.id,
     creatorId: user.id,
-  })
+  });
 
-  await task.$relatedQuery('labels').relate(label.id)
+  await task.$relatedQuery('labels').relate(label.id);
 
-  await agent.delete(app.reverse(ROUTES.LABELS_DELETE.NAME, { id: label.id }))
+  await agent.delete(app.reverse(Routes.LABELS_DELETE.NAME, { id: label.id }));
 
-  const existingLabel = await app.objection.models.label.query().findById(label.id)
+  const existingLabel = await app.objection.models.label.query().findById(label.id);
 
-  expect(existingLabel).toBeDefined()
-})
+  expect(existingLabel).toBeDefined();
+});

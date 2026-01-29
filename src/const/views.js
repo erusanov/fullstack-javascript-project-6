@@ -21,8 +21,9 @@ const Views = Object.freeze({
   TASKS: Object.freeze({
     INDEX: 'tasks/index.pug',
     NEW: 'tasks/new.pug',
+    VIEW: 'tasks/show.pug',
     EDIT: 'tasks/edit.pug',
   }),
-})
+});
 
-export { Views }
+export default Views;

@@ -5,24 +5,24 @@ export async function up(knex) {
       (table) => {
         table
           .increments('id')
-          .primary()
+          .primary();
 
         table
           .string('name')
           .notNullable()
-          .unique()
+          .unique();
 
         table
           .timestamp('created_at')
-          .defaultTo(knex.fn.now())
+          .defaultTo(knex.fn.now());
 
         table
           .timestamp('updated_at')
-          .defaultTo(knex.fn.now())
+          .defaultTo(knex.fn.now());
       },
-    )
+    );
 }
 
 export async function down(knex) {
-  return knex.schema.dropTable('labels')
+  return knex.schema.dropTable('labels');
 }

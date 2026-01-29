@@ -1,11 +1,12 @@
-import { Model } from 'objection'
-import User from './User.js'
-import TaskStatus from './TaskStatus.js'
-import Label from './Label.js'
+import { Model } from 'objection';
+import User from './User.js';
+import TaskStatus from './TaskStatus.js';
+// eslint-disable-next-line import/no-cycle
+import Label from './Label.js';
 
 class Task extends Model {
   static get tableName() {
-    return 'tasks'
+    return 'tasks';
   }
 
   static get jsonSchema() {
@@ -21,7 +22,7 @@ class Task extends Model {
         creatorId: { type: 'integer' },
         executorId: { type: ['integer', 'null'] },
       },
-    }
+    };
   }
 
   static get relationMappings() {
@@ -56,14 +57,14 @@ class Task extends Model {
         join: {
           from: 'tasks.id',
           through: {
-            from: 'task_label.taskId',
-            to: 'task_label.labelId',
+            from: 'task_label.task_id',
+            to: 'task_label.label_id',
           },
           to: 'labels.id',
         },
       },
-    }
+    };
   }
 }
 
-export default Task
+export default Task;

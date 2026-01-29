@@ -1,9 +1,10 @@
-import { ValidationError } from 'objection'
-import { Routes  } from '../const/routes.js'
-import { Views } from '../const/views.js'
-import { FlashStatus } from '../const/flashStatus.js'
+import { ValidationError } from 'objection';
+import Routes from '../const/routes.js';
+import Views from '../const/views.js';
+import FlashStatus from '../const/flashStatus.js';
+import { applyFlashError, normalizeValidationErrors } from '../lib/validation.js';
 
-const { LABELS: LabelViews } = Views
+const { LABELS: LabelViews } = Views;
 
 export default async (app) => {
   app.get(
@@ -19,7 +20,7 @@ export default async (app) => {
           labels: await app.objection.models.label.query(),
         },
       ),
-  )
+  );
 
   app.get(
     Routes.LABELS_NEW.URL,
@@ -34,7 +35,7 @@ export default async (app) => {
           label: {},
         },
       ),
-  )
+  );
 
   app.post(
     Routes.LABELS_CREATE.URL,
@@ -43,27 +44,26 @@ export default async (app) => {
       preHandler: [app.authenticate],
     },
     async (request, reply) => {
-      const label = request.body.data
+      const label = request.body.data;
 
       try {
-        await app.objection.models.label.query().insert(label)
-      }
-      catch (e) {
+        await app.objection.models.label.query().insert(label);
+      } catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.create.validation'))
+          applyFlashError(request, reply, 'flash.label.errors.create.validation');
 
-          return reply.view(LabelViews.NEW, { label, errors: e.data })
+          return reply.view(LabelViews.NEW, { label, errors: normalizeValidationErrors(e.data) });
         }
 
-        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.create.db'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.create.db'));
 
-        return reply.view(LabelViews.NEW, { label })
+        return reply.view(LabelViews.NEW, { label });
       }
 
-      request.flash(FlashStatus.SUCCESS, reply.t('flash.label.create.success'))
-      reply.redirect(app.reverse(Routes.LABELS.NAME))
+      request.flash(FlashStatus.SUCCESS, reply.t('flash.label.create.success'));
+      return reply.redirect(app.reverse(Routes.LABELS.NAME));
     },
-  )
+  );
 
   app.get(
     Routes.LABELS_EDIT.URL,
@@ -72,11 +72,11 @@ export default async (app) => {
       preHandler: [app.authenticate],
     },
     async (request, reply) => {
-      const label = await app.objection.models.label.query().findById(request.params.id)
+      const label = await app.objection.models.label.query().findById(request.params.id);
 
-      return reply.view(LabelViews.EDIT, { label })
+      return reply.view(LabelViews.EDIT, { label });
     },
-  )
+  );
 
   app.patch(
     Routes.LABELS_UPDATE.URL,
@@ -87,16 +87,15 @@ export default async (app) => {
     async (request, reply) => {
       const label = await app.objection.models.label
         .query()
-        .findById(request.params.id)
+        .findById(request.params.id);
 
-      const { _method, ...updatedData } = request.body.data
+      const { _method, ...updatedData } = request.body.data;
 
       try {
-        await label.$query().patch(updatedData)
-      }
-      catch (e) {
+        await label.$query().patch(updatedData);
+      } catch (e) {
         if (e instanceof ValidationError) {
-          request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.edit.validation'))
+          applyFlashError(request, reply, 'flash.label.errors.edit.validation');
 
           return reply.view(
             LabelViews.EDIT,
@@ -105,28 +104,28 @@ export default async (app) => {
                 ...label,
                 ...updatedData,
               },
-              errors: e.data,
+              errors: normalizeValidationErrors(e.data),
             },
-          )
+          );
         }
 
-        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.edit.db'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.edit.db'));
 
         return reply.view(
-            LabelViews.EDIT,
-            {
-                label: {
-                    ...label,
-                    ...updatedData,
-                }
+          LabelViews.EDIT,
+          {
+            label: {
+              ...label,
+              ...updatedData,
             },
-        )
+          },
+        );
       }
 
-      request.flash(FlashStatus.SUCCESS, reply.t('flash.label.edit.success'))
-      reply.redirect(app.reverse(Routes.LABELS.NAME))
+      request.flash(FlashStatus.SUCCESS, reply.t('flash.label.edit.success'));
+      return reply.redirect(app.reverse(Routes.LABELS.NAME));
     },
-  )
+  );
 
   app.delete(
     Routes.LABELS_DELETE.URL,
@@ -138,27 +137,26 @@ export default async (app) => {
       const label = await app.objection.models.label
         .query()
         .findById(request.params.id)
-        .withGraphFetched('tasks')
+        .withGraphFetched('tasks');
 
       if (label.tasks.length > 0) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.delete.hasTasks'))
+        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.delete.hasTasks'));
 
-        return reply.redirect(app.reverse(Routes.LABELS.NAME))
+        return reply.redirect(app.reverse(Routes.LABELS.NAME));
       }
 
       try {
         await app.objection.models.label
           .query()
-          .deleteById(request.params.id)
-      }
-      catch (e) {
-        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.delete.db'))
+          .deleteById(request.params.id);
+      } catch (e) {
+        request.flash(FlashStatus.ERROR, reply.t('flash.label.errors.delete.db'));
 
-        return reply.redirect(app.reverse(Routes.LABELS.NAME))
+        return reply.redirect(app.reverse(Routes.LABELS.NAME));
       }
 
-      request.flash(FlashStatus.SUCCESS, reply.t('flash.label.delete.success'))
-      reply.redirect(app.reverse(Routes.LABELS.NAME))
+      request.flash(FlashStatus.SUCCESS, reply.t('flash.label.delete.success'));
+      return reply.redirect(app.reverse(Routes.LABELS.NAME));
     },
-  )
-}
+  );
+};

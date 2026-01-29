@@ -1,9 +1,10 @@
-import { Model } from 'objection'
-import Task from './Task.js'
+import { Model } from 'objection';
+// eslint-disable-next-line import/no-cycle
+import Task from './Task.js';
 
 class Label extends Model {
   static get tableName() {
-    return 'labels'
+    return 'labels';
   }
 
   static get jsonSchema() {
@@ -15,7 +16,7 @@ class Label extends Model {
         id: { type: 'integer' },
         name: { type: 'string', minLength: 1, maxLength: 255 },
       },
-    }
+    };
   }
 
   static get relationMappings() {
@@ -26,14 +27,14 @@ class Label extends Model {
         join: {
           from: 'labels.id',
           through: {
-            from: 'task_label.labelId',
-            to: 'task_label.taskId',
+            from: 'task_label.label_id',
+            to: 'task_label.task_id',
           },
           to: 'tasks.id',
         },
       },
-    }
+    };
   }
 }
 
-export default Label
+export default Label;

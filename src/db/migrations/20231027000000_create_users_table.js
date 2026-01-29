@@ -5,32 +5,32 @@ export async function up(knex) {
       (table) => {
         table
           .increments('id')
-          .primary()
+          .primary();
 
         table
-          .string('first_name')
+          .string('first_name');
 
         table
-          .string('last_name')
+          .string('last_name');
 
         table
           .string('email')
-          .unique()
+          .unique();
 
         table
-          .string('password_digest')
+          .string('password_digest');
 
         table
           .timestamp('created_at')
-          .defaultTo(knex.fn.now())
+          .defaultTo(knex.fn.now());
 
         table
           .timestamp('updated_at')
-          .defaultTo(knex.fn.now())
+          .defaultTo(knex.fn.now());
       },
-    )
+    );
 }
 
 export async function down(knex) {
-  return knex.schema.dropTable('users')
+  return knex.schema.dropTable('users');
 }

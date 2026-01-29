@@ -8,9 +8,9 @@ block content
       input(type="hidden" name="_method" value="patch")
       .mb-3
         label.form-label(for='data_name')= t('views.task.name')
-        input.form-control(type='text' id='data_name' name='data[name]' value=task.name)
+        input.form-control(type='text' id='data_name' name='data[name]' value=task.name class=(errors && errors.name ? 'is-invalid' : ''))
         if errors && errors.name
-          .text-danger= errors.name.message
+          div.invalid-feedback= errors.name.message
       .mb-3
         label.form-label(for='data_description')= t('views.task.description')
         textarea.form-control(id='data_description' name='data[description]')= task.description
@@ -20,7 +20,7 @@ block content
           each status in statuses
             option(value=status.id selected=task.statusId === status.id)= status.name
         if errors && errors.statusId
-          .text-danger= errors.statusId.message
+          div.invalid-feedback= errors.statusId.message
       .mb-3
         label.form-label(for='data_executorId')= t('views.task.executor')
         select.form-select(id='data_executorId' name='data[executorId]')

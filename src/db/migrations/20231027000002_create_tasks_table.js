@@ -5,44 +5,44 @@ export async function up(knex) {
       (table) => {
         table
           .increments('id')
-          .primary()
+          .primary();
 
         table
           .string('name')
-          .notNullable()
+          .notNullable();
 
         table
-          .text('description')
+          .text('description');
 
         table
           .integer('status_id')
           .references('id')
           .inTable('task_statuses')
-          .onDelete('RESTRICT')
+          .onDelete('RESTRICT');
 
         table
           .integer('creator_id')
           .references('id')
           .inTable('users')
-          .onDelete('RESTRICT')
+          .onDelete('RESTRICT');
 
         table
           .integer('executor_id')
           .references('id')
           .inTable('users')
-          .onDelete('SET NULL')
+          .onDelete('SET NULL');
 
         table
           .timestamp('created_at')
-          .defaultTo(knex.fn.now())
+          .defaultTo(knex.fn.now());
 
         table
           .timestamp('updated_at')
-          .defaultTo(knex.fn.now())
+          .defaultTo(knex.fn.now());
       },
-    )
+    );
 }
 
 export async function down(knex) {
-  return knex.schema.dropTable('tasks')
+  return knex.schema.dropTable('tasks');
 }

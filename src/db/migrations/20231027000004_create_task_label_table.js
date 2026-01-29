@@ -5,34 +5,34 @@ export async function up(knex) {
       (table) => {
         table
           .increments('id')
-          .primary()
+          .primary();
 
         table
           .integer('task_id')
           .references('id')
           .inTable('tasks')
-          .onDelete('CASCADE')
+          .onDelete('CASCADE');
 
         table
           .integer('label_id')
           .references('id')
           .inTable('labels')
-          .onDelete('RESTRICT')
+          .onDelete('RESTRICT');
 
         table
-          .unique(['task_id', 'label_id'])
+          .unique(['task_id', 'label_id']);
 
         table
           .timestamp('created_at')
-          .defaultTo(knex.fn.now())
+          .defaultTo(knex.fn.now());
 
         table
           .timestamp('updated_at')
-          .defaultTo(knex.fn.now())
+          .defaultTo(knex.fn.now());
       },
-    )
+    );
 }
 
 export async function down(knex) {
-  return knex.schema.dropTable('task_label')
+  return knex.schema.dropTable('task_label');
 }

@@ -10,28 +10,28 @@ block content
         .row
           .col-12.col-md
             .input-group.mb-3
-              label.input-group-text(for='statusId')= t('views.task.filter.status')
-              select.form-select(id='statusId' name='statusId')
+              label.input-group-text(for='data_status')= t('views.task.filter.status')
+              select.form-select(id='data_status' name='statusId')
                 option(value="")
                 each status in statuses
                   option(value=status.id selected=filter.statusId == status.id)= status.name
           .col-12.col-md
             .input-group.mb-3
-              label.input-group-text(for='executorId')= t('views.task.filter.executor')
-              select.form-select(id='executorId' name='executorId')
+              label.input-group-text(for='data_executor')= t('views.task.filter.executor')
+              select.form-select(id='data_executor' name='executorId')
                 option(value="")
                 each user in users
                   option(value=user.id selected=filter.executorId == user.id)= `${user.firstName} ${user.lastName}`
           .col-12.col-md
             .input-group.mb-3
-              label.input-group-text(for='labelId')= t('views.task.filter.label')
-              select.form-select(id='labelId' name='labelId')
+              label.input-group-text(for='data_label')= t('views.task.filter.label')
+              select.form-select(id='data_label' name='labelId')
                 option(value="")
                 each label in labels
                   option(value=label.id selected=filter.labelId == label.id)= label.name
         .mb-3.form-check
-          input.form-check-input(id='isCreatorUser' type='checkbox' name='isCreatorUser' checked=filter.isCreatorUser)
-          label.form-check-label(for='isCreatorUser')= t('views.task.filter.showMyTasks')
+          input.form-check-input(id='data_isCreatorUser' type='checkbox' name='isCreatorUser' checked=filter.isCreatorUser)
+          label.form-check-label(for='data_isCreatorUser')= t('views.task.filter.showMyTasks')
         input.btn.btn-primary(type='submit' value=t('views.task.filter.apply'))
 
   .table-responsive
